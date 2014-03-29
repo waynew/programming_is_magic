@@ -1,6 +1,14 @@
 Flask==0.10.1
+Flask-Login==0.2.10
+Flask-SQLAlchemy==1.0
 Jinja2==2.7.2
 MarkupSafe==0.19
+SQLAlchemy==0.9.4
 Werkzeug==0.9.4
+cov-core==1.7
+coverage==3.7.1
 gunicorn==18.0
 itsdangerous==0.24
+py==1.4.20
+pytest==2.5.2
+pytest-cov==1.6
