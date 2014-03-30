@@ -1,5 +1,6 @@
 import hashlib
-from sqlalchemy import Column, Integer, String, create_engine
+from contextlib import contextmanager
+from sqlalchemy import Column, Integer, String, create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
@@ -8,6 +9,8 @@ salt = 'sodium chloride'
 
 engine = create_engine('sqlite:///:memory:')
 Base = declarative_base()
+session = sessionmaker(bind=engine)()
+
 
 class User(Base):
     __tablename__ = "users"
@@ -26,9 +29,6 @@ class User(Base):
         self.hashword = _make_hashword(password)
 
 
-Session = sessionmaker(bind=engine)
-
-
 def init_db():
     Base.metadata.create_all(engine)
 
@@ -45,11 +45,11 @@ def create_user(username, password):
     Hash and salt the passwords. Mmmm, delicious salt.
 
     '''
-    session = Session()
     session.add(User(username, _make_hashword(password)))
     try:
         session.commit()
     except IntegrityError:
+        session.rollback()
         raise ValueError("Username '%s' already exists" % username)
 
 
@@ -58,5 +58,13 @@ def get_user(username):
     If no user exists with that name, return None.
 
     '''
-    session = Session()
     return session.query(User).filter_by(username=username).first()
+
+
+def update_user(user):
+    '''Update the user that was passed in, except the username.'''
+    hist = inspect(user).attrs.username.history
+    if hist.has_changes():
+        user.username = hist.deleted[0]
+    session.add(user)
+    session.commit()

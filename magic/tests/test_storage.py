@@ -68,14 +68,29 @@ def test_create_user_twice_should_throw_ValueError():
 
 
 def test_update_user_should_update_the_password():
-    pytest.skip()
     username = 'fnord'
     old_password = "dirty gym socks"
     new_password = "dirty Jim's sock"
-
     storage.create_user(username, old_password)
     user = storage.get_user(username)
-    storage.update_user(username)
+
+    user.set_password(new_password)
+    storage.update_user(user)
+    user = storage.get_user(username)
+
+    assert user.hashword == storage._make_hashword(new_password)
+
+
+def test_update_user_should_NOT_update_username():
+    username = "fnord"
+    new_username = "bob"
+
+    storage.create_user(username, "password?")
+    user = storage.get_user(username)
+    user.username = new_username
+    storage.update_user(user)
+
+    assert storage.get_user(new_username) == None
 
 
 def test_User_set_password_should_update_hashword():
