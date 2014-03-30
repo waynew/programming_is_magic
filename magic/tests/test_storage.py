@@ -2,6 +2,7 @@ import hashlib
 import pytest
 from .. import storage
 
+
 def setup_function(function):
     storage.init_db()
 
@@ -57,7 +58,7 @@ def test_returned_user_should_have_correct_hashword():
 
 
 def test_get_user_for_username_not_added_should_return_None():
-    assert storage.get_user('roscivs') == None
+    assert storage.get_user('roscivs') is None
 
 
 def test_create_user_twice_should_throw_ValueError():
@@ -90,7 +91,7 @@ def test_update_user_should_NOT_update_username():
     user.username = new_username
     storage.update_user(user)
 
-    assert storage.get_user(new_username) == None
+    assert storage.get_user(new_username) is None
 
 
 def test_User_set_password_should_update_hashword():
