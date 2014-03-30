@@ -19,9 +19,12 @@ class User(Base):
         self.username = username
         self.hashword = hashword
 
-
     def __repr__(self):
         return "<User %s>" % self.username
+
+    def set_password(self, password):
+        self.hashword = _make_hashword(password)
+
 
 Session = sessionmaker(bind=engine)
 
